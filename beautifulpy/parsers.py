@@ -10,7 +10,7 @@ tokenizer = Lark("""
     integer.0: NUMBER
     !comment.3: ("#" WORD+)
     !decorator: "@" (WORD|method)
-    !from_import.2: "from" WORD "import" WORD+
+    !from_import.2: "from" (WORD|CNAME) "import" (WORD|CNAME ",")*
     !import: "import" WORD
     !keyword: "if" | "elif" | "else" | "and" | "or" | "not"
     !boolean.1: "True" | "False"
