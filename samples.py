@@ -17,3 +17,8 @@ def generate_random_numbers(amount):
 if True == "string":
     if False == 1:
         print("hello")
+
+#decorator example
+@decorator
+def decorator_function():
+    pass

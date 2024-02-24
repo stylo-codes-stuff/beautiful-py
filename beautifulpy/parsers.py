@@ -3,11 +3,13 @@ import re
 from rich import print
 from lark import Lark
 from lark import Transformer
+from lark import Visitor
 #tokenizes a whole line of code for parsing
 tokenizer = Lark("""
     %import common (WORD, ESCAPED_STRING,NUMBER,CNAME)
     integer.0: NUMBER
     !comment.3: ("#" WORD+)
+    !decorator: "@" (WORD|method)
     !from_import.2: "from" WORD "import" WORD+
     !import: "import" WORD
     !keyword: "if" | "elif" | "else" | "and" | "or" | "not"
@@ -22,7 +24,7 @@ tokenizer = Lark("""
     list: WORD|CNAME "=" "[" (string|boolean|integer|WORD|CNAME)* "]"
     !method: ((WORD|CNAME)|".")*  "("+ (string|boolean|integer|WORD|CNAME|"."|","|"("|")")* ")"+
     tree: branch
-    branch: (variable|keyword|boolean|string|integer|operator|comparitive_operator|comment|function_def|method|list|conditional_statement|for_loop|import|from_import)* ":"*
+    branch: (variable|keyword|boolean|string|integer|operator|comparitive_operator|comment|function_def|method|list|conditional_statement|for_loop|import|from_import|decorator)* ":"*
     %ignore " "
     %ignore "\\n"
 """,start="tree")
@@ -63,10 +65,11 @@ method = Lark("""
     """)
 
 statement_parser= tokenizer.parse('if "hello" == "goodbye" and world == 1.2 :')
-
+test = open("test.txt","w")
 line = tokenizer.parse('if "hello" == "goodbye" and world == 1.2 :')
 with open("../samples.py","r") as file:
     for line in file:
         line = tokenizer.parse(line)
         print(line)
+        test.write(f"{str(line)}\n")
 print(statement_parser)
