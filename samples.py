@@ -1,8 +1,3 @@
-
-
-
-
-
 #a bunch of random imports
 from  beautifulpy import parsers
 from lark import Lark, Transformer, Visitor
@@ -18,13 +13,13 @@ def wait_seconds(seconds):
 def generate_random_numbers(amount):
     numbers = []
     for number in range(amount):
-        numbers.append(random.randint(0,100))
+        numbers.append(random.randint(0,100)
 # a nested if statement
 if True == "string":
     if False == 1:
         print("hello")
 
 #decorator example
-@decorator
+@decorator.test()
 def decorator_function():
     pass
