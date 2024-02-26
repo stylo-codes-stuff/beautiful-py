@@ -35,12 +35,23 @@
 
  
  
-import parsers
+from parsers import tokenizer
 import re
-test = open("../samples.py","r")
+import rich
 def get_indent_level(line):
     count = re.findall(r'\s', line)
     return len(count)
-for line in test:
-    print(get_indent_level(line))
-def find()
+    for line in test:
+        print(get_indent_level(line))
+def tree(file,pretty = False):
+    with open(file,"r") as file:
+        if pretty == True:
+            for line in file:
+                line = tokenizer.parse(line)
+                print(line)
+        if pretty == False:
+            for line in file:
+                print(tokenizer.parse(line))
+def parse(element):
+    pass
+tree("../samples.py",pretty=True)
