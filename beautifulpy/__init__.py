@@ -35,7 +35,7 @@
 
  
  
-from parsers import tokenizer
+from parsers import python_tokenizer
 import re
 import rich
 def get_indent_level(line):
@@ -43,15 +43,21 @@ def get_indent_level(line):
     return len(count)
     for line in test:
         print(get_indent_level(line))
+#prints asts for the given file. When pretty is true it uses rich to print the asts.
 def tree(file,pretty = False):
     with open(file,"r") as file:
         if pretty == True:
             for line in file:
-                line = tokenizer.parse(line)
-                print(line)
+                line = python_tokenizer.parse(line)
+                rich.print(line)
         if pretty == False:
             for line in file:
-                print(tokenizer.parse(line))
-def parse(element):
-    pass
-tree("../samples.py",pretty=True)
+                line = tokenizer.parse(line)
+                print(line)
+
+def if_statement(file,parser):
+    with open(file,"r") as file:
+        for line in file:
+            line = python_tokenizer.parse(line)
+    
+tree("../samples.py",pretty= True)

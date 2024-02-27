@@ -1,11 +1,6 @@
-from lark import Lark
-parser = Lark("""
-start:    ("\n"|word)*
-word:     (PRE1|PRE2) SUFFIX? "\n"
+variable = 1
+class test:
 
-PRE1:     /FQ(?!NNOM)/
-PRE2:     /FQN(?!O)/
-SUFFIX:   "NOM"
-""")
-
-parser.parse("FQNOM")
+turt = test()
+import inspect
+print(inspect.isclass(type(turt)))
