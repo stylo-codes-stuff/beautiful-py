@@ -9,7 +9,7 @@ var = 1
 one = "1"
 true = False
 #functions that use some of those imports
-def wait_seconds(seconds):
+def wait_seconds (seconds):
     time.sleep.sleep.sleep(seconds)
 
 def generate_random_numbers(amount):
