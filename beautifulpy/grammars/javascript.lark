@@ -1,0 +1,7 @@
+//WIP Javascript grammar adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
+%import common.WS
+function: "function" name* "("  arguments ")" "{" /./* "}"
+start: function
+name: /[^\W\d]\w*/
+arguments: (name|",")*
+%ignore WS

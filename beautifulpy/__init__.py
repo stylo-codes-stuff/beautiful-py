@@ -30,34 +30,35 @@
 #                                                                                    |__/          |__/         jgs   `\  `"""""`  /`
 #                                                                                                                       `""-----""`
 
-
-
-
- 
- 
-from parsers import python_tokenizer
-import re
+import parsers
 import rich
-def get_indent_level(line):
-    count = re.findall(r'\s', line)
-    return len(count)
-    for line in test:
-        print(get_indent_level(line))
-#prints asts for the given file. When pretty is true it uses rich to print the asts.
-def tree(file,pretty = False):
-    with open(file,"r") as file:
-        if pretty == True:
-            for line in file:
-                line = python_tokenizer.parse(line)
-                rich.print(line)
-        if pretty == False:
-            for line in file:
-                line = tokenizer.parse(line)
-                print(line)
+from lark import Visitor, Transformer,Token
 
-def if_statement(file,parser):
+python_requirements = []
+import_trees = []
+supported_languages = ["python","javascript"]
+class get_import_statements(Visitor):
+    def import_stmt(self, tree):
+        assert tree.data == "import_stmt"
+        import_trees.append(tree.children[0])
+class get_imports(Visitor):
+    def name(self,tree):
+        assert tree.data == "name"
+        python_requirements.append(tree.children[0])
+"""returns a list of imports for the given file."""
+def get_requirements(file,language):
+    python_requirements.clear()
+    import_trees.clear()
+
     with open(file,"r") as file:
-        for line in file:
-            line = python_tokenizer.parse(line)
-    
-tree("../samples.py",pretty= True)
+        tree = parsers.python.parse(file.read())
+        get_import_statements().visit(tree)
+        for tree in import_trees:
+            get_imports().visit(tree)
+        for token in python_requirements:
+            print(token.value)
+            python_requirements[python_requirements.index(token)] = token.value
+    return python_requirements
+def parse(file, language):
+    if language not in supported_languages:
+        raise Exception("unsupported language")
