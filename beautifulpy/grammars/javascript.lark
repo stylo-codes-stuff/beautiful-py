@@ -1,7 +1,13 @@
 //WIP Javascript grammar adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
 %import common.WS
-function: "function" name* "("  arguments ")" "{" /./* "}"
-start: function
+funcdef: "function" name* "("  arguments ")" "{"  "}"
+async_fundef: "async" funcdef                         
+file_input: 
+var_declaration:
 name: /[^\W\d]\w*/
+comment: "//" /./*
+func_call: (name|"("|")"|".")
+class_def: name
+block_comment: "/*" "*/"
 arguments: (name|",")*
 %ignore WS

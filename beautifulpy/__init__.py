@@ -32,6 +32,7 @@
 
 import parsers
 import rich
+import sys
 from lark import Visitor, Transformer,Token
 
 python_requirements = []
@@ -46,19 +47,21 @@ class get_imports(Visitor):
         assert tree.data == "name"
         python_requirements.append(tree.children[0])
 """returns a list of imports for the given file."""
-def get_requirements(file,language):
+def get_requirements(file,language, filter_builtins = False):
     python_requirements.clear()
     import_trees.clear()
-
     with open(file,"r") as file:
         tree = parsers.python.parse(file.read())
         get_import_statements().visit(tree)
         for tree in import_trees:
             get_imports().visit(tree)
         for token in python_requirements:
-            print(token.value)
-            python_requirements[python_requirements.index(token)] = token.value
+            if filter_builtins == True:
+                if token.value not in dir(__builtins__) and filter_builtins == False:
+                    python_requirements[python_requirements.index(token)] = token.value
+            else:
+                python_requirements[python_requirements.index(token)] = token.value
     return python_requirements
 def parse(file, language):
     if language not in supported_languages:
-        raise Exception("unsupported language")
+        raise Exception(f"unsupported language, please use a language from the list below\n{supported_languages}")
