@@ -1,5 +1,4 @@
 #a bunch of random imports
-from  beautifulpy import parsers
 from lark import Lark, Transformer, Visitor
 import math 
 import itertools
