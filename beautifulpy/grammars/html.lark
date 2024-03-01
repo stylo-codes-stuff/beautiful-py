@@ -1,1 +1,4 @@
-start:
+%import common(WORD)
+file_input: doctype_tag
+doctype_tag: "< !DOCTYPE html >"
+class: "class" "=" "\""
