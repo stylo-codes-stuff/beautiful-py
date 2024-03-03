@@ -25,20 +25,24 @@ boolean: ("true"|"false")
 //atomic operations
 concat_op: "test"
 //simple statements
-simple_stmt: (break_stmt|catch_stmt|try)
+simple_stmt: (break_stmt|catch_stmt|try_stmt)
 break_stmt: "break" "label"* ";"*
 continue_stmt: "continue" ";"*
 debug_stmt: "debugger" ";"*
 //note to self delete statement and import statements are unfinished
-del_stmt: "delete"
-import_stmt:
-require_stmt:
+del_stmt:  "delete" name "." name ";"
+import_stmt: "import" (name|string)
+from_import: "import" (name|string)* "from" (name|string)*
+require_stmt: name "=" "require" "(" ")"
 //compound statements
-if_stmt: "if" "(" ")"
+if_stmt: "if" "(" ")" "{" "}"
 try_stmt: "try" "{" "}"
 catch_stmt: "catch" "{" "}"
 class_def: "class" name "{" "}"
 func_def: "function" name "(" ")" "{" "}"
+do_while: "do" "{" "}" "while" "(" ")" ";"*
+while: "while" "(" ")" "{" "}"
+
 //terminals
 !name: NAME
 NAME: /[^\W\d]\w*/

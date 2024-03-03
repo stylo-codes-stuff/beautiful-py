@@ -32,6 +32,7 @@
 import sys
 import parsers
 import rich
+import pathlib
 from lark import Visitor, Transformer,Token
 
 python_requirements = []
@@ -54,6 +55,8 @@ class get_imports(Visitor):
 """returns a list of imports for the given file."""
 def get_requirements(file,language, filter_builtins = False):
     if language == "python":
+        if pathlib.Path(file).suffix != "py":
+            raise Exception(f"The file you are trying to parse is of type ${pathlib.Path(file).suffix} not py")
         python_requirements.clear()
         import_trees.clear()
         with open(file,"r") as file:
@@ -74,3 +77,4 @@ def get_requirements(file,language, filter_builtins = False):
 def parse(file, language):
     if language not in supported_languages:
         raise Exception(f"unsupported language, please use a language from the list below\n{supported_languages}")
+get_requirements("tests/javascript_test.js","python")
