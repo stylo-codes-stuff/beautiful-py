@@ -3,47 +3,27 @@
 // BUT before making an issue please make sure it's not due to an error or formatting issue in your code
 //NOTE: remember to keep rule names similar to ones in the python grammar when possible to allow for code reusability 
 %import common.WS
+%import common.WORD
 
 
-file_input: (comment)
-
+file_input: (comment|compound_stmt)*
 //comments
-
-comment: (hashbang|line_comment|block_comment)*
-hashbang: "#!"/./*
-line_comment: "//" /./*
-block_comment: /^"/*" "*/"$/
-
+comment: (hashbang|line_comment|block_comment)
+hashbang: /#![^\n]*/
+line_comment: /\/\/[^\n]*/
+block_comment: "/*" WORD* "*/"
+// compound statements
+compound_stmt: (func_def)
+func_def: "function" WORD "(" args ")" "{" (simple_stmt|compound_stmt)* "}"
+// simple statements
+simple_stmt: (func_call) 
+func_call: (WORD|".")* "(" (args|operators)* ")"
 //operators
-logic_op: ("&&"|"||"|"!")
-comp_op: ("=="|"==="|"!="|"!==="|">"|"<"|">="|"<=")
-//variable types
-type:
-string: ("\""|"\'")
-integer: /[0-9]/*
-boolean: ("true"|"false")
-//atomic operations
-concat_op: "test"
-//simple statements
-simple_stmt: (break_stmt|catch_stmt|try_stmt)
-break_stmt: "break" "label"* ";"*
-continue_stmt: "continue" ";"*
-debug_stmt: "debugger" ";"*
-//note to self delete statement and import statements are unfinished
-del_stmt:  "delete" name "." name ";"
-import_stmt: "import" (name|string)
-from_import: "import" (name|string)* "from" (name|string)*
-require_stmt: name "=" "require" "(" ")"
-//compound statements
-if_stmt: "if" "(" ")" "{" "}"
-try_stmt: "try" "{" "}"
-catch_stmt: "catch" "{" "}"
-class_def: "class" name "{" "}"
-func_def: "function" name "(" ")" "{" "}"
-do_while: "do" "{" "}" "while" "(" ")" ";"*
-while: "while" "(" ")" "{" "}"
-
-//terminals
-!name: NAME
-NAME: /[^\W\d]\w*/
+operators: ("+"|"-"|"/")
+//other
+name: /[\w\d]+/
+args : (name|",")*
 %ignore WS
+
+//use this rule for when you need to define something without using it
+placeholder_rule: "placeholder_rule"
