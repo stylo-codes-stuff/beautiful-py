@@ -55,7 +55,7 @@ class get_imports(Visitor):
 """returns a list of imports for the given file."""
 def get_requirements(file,language, filter_builtins = False):
     if language == "python":
-        if pathlib.Path(file).suffix != "py":
+        if pathlib.Path(file).suffix != ".py":
             raise Exception(f"The file you are trying to parse is of type ${pathlib.Path(file).suffix} not py")
         python_requirements.clear()
         import_trees.clear()
@@ -77,4 +77,8 @@ def get_requirements(file,language, filter_builtins = False):
 def parse(file, language):
     if language not in supported_languages:
         raise Exception(f"unsupported language, please use a language from the list below\n{supported_languages}")
-get_requirements("tests/javascript_test.js","python")
+    
+
+
+
+print(get_requirements("tests/python_test.py","python"))
