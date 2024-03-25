@@ -1,6 +1,5 @@
-//WIP Javascript grammar adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
-//If I miss anything or an error occurs when using this grammar, please make an issue!
-// BUT before making an issue please make sure it's not due to an error or formatting issue in your code
+//grammar for parsing and decompressing minified javascript
+
 %import common.WS
 %import common.WORD
 
