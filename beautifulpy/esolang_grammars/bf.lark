@@ -1,0 +1,12 @@
+//a little break from js syntactic hell
+file_input: (commands)
+
+commands: (point_left|point_right)
+point_right: ">"
+point_left: "<"
+mem_cell_increment: "+"
+mem_cell_decrement: "-"
+output: "."
+input:","
+jump_past: "["
+jump_back:"]"
