@@ -14,11 +14,12 @@ block_comment: "/*" WORD* "*/"
 // compound statements
 compound_stmt: (func_def)
 func_def: "function" name "(" args ")" "{" (simple_stmt|compound_stmt)* "}"
-
+exported_func: "export function" name "(" args ")" "{" (simple_stmt|compound_stmt)"}"
 // simple statements
-simple_stmt: (func_call|var_declaration) 
+simple_stmt: (func_call|var_declaration|strict_equality) 
 var_declaration: ("const"|"var"|"let") name "=" type ";"*
 func_call: (WORD|".")* "(" (args|operator)* ")"
+strict_equality: name "===" name
 
 //operators
 operator: ("+"|"-"|"/")
