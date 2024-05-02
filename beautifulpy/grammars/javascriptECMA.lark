@@ -1,44 +1,376 @@
-//WIP Javascript grammar adapted from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
-//If I miss anything or an error occurs when using this grammar, please make an issue!
-// BUT before making an issue please make sure it's not due to an error or formatting issue in your code
-%import common.WS
-%import common.WORD
+//cloned and remade from this gist https://gist.github.com/Chubek/0ab33e40b01a029a7195326e89646ec5
+
+ecma_script_module:  (top_level | ignorable )
+
+top_level      : statement
+				 | function_declaration
+				 | class_declaration
+
+function_declaration: "async"? "function" identifier function_params_postfix compound_statement
+
+class_declaration	:"class" identifier ("extends" comma_separated_expressions)? class_body
+
+class_body	: "{" ( class_member ) "}"
+   
+class_member: ( "static" 
+					| "getter" 
+					| "setter" 
+					| "public" 
+					| "private" )? ( class_method | class_property )
+
+class_property	: "#"? null_join identifier ("=" expression)? ";"?
+
+class_method			: "#"? null_join identifier function_params_postfix compound_statement
+
+compound_statement		: "{" ( statement ) "}"
+
+statement			: expression_statement
+				 | declaration_statement
+				 | if_statement
+				 | switch_statement
+				 | for_statement
+				 | for_in_statement
+				 | for_of_statement
+				 | do_while_statement
+				 | control_flow_statement
+				 | try_catch_finally_statement
+				 | label_statement
+				 | export_statement
+				 | import_statement
 
 
-file_input: (comment|compound_stmt|simple_stmt)*
-//comments
-comment: (hashbang|line_comment|block_comment)
-hashbang: /#![^\n]*/
-line_comment: /\/\/[^\n]*/
-block_comment: "/*" WORD* "*/"
+export_statement		: "export" "default"? declaration_statement ";"?
+				 | "export" module_element "from" module_element ";"?
+				
 
-// compound statements
-compound_stmt: (func_def|func_setter|self_exec|no_key_func|anon_method)
-func_def: "function"+ name "(" args ")" "{" (simple_stmt|compound_stmt)* "}"
-func_setter: "set"+ name "(" args ")" "{" (simple_stmt|compound_stmt)* "}"
-self_exec:"(" (compound_stmt|simple_stmt) ")"
-no_key_func: name "(" args ")" "{" (simple_stmt|compound_stmt)* "}"
-anon_method:"{" (func_setter|self_exec|no_key_func)* "}"
-empty_for: "for" "(" ")
-if_stmt: "if"
+import_statement		: "import" module_element ";"?
+				 | "import" paren_enclosed_string ";"?
+				 | "import" module_element "from" module_element ";"?
 
-// simple statements
-simple_stmt: (func_call|var_declaration|strict_equality) 
-var_declaration: ("const"|"var"|"let") name "=" type ";"*
-func_call: (name|".")* "(" (args|operator)* ")" ";"*
-strict_equality: name "===" name ";"*
-//operators
-operator: ("+"|"-"|"/")
-//other
-!type: (string|integer|boolean|name)
-string: "\"" name+ "\""
-integer: "0".."9"
-boolean: ("true"|"false")
-array: "[" (type|",")* "]"
-name.-1: /[\w\d]+/
-key:
-args : (/[\w\d]+/|","|array)
-%ignore WS
+label_statement			: identifier ":" ( statement )
 
-//use this rule for when you need to define something without using it
-placeholder_rule: "placeholder_rule"
+with_statement			: "with" "(" expression ")" compound_statement
+
+try_catch_finally_statement	: "try" compound_statement ( "catch" ( "(" expression ")" )? compound_statement )? ("finally" compound_statement )?
+
+control_flow_statement		: "break"  [ ";" ]
+				 | "continue" [ ";" ]
+				 | "return" expression [ ";" ]
+				 | "throw" expression [ ";" ]
+
+do_while_statement		: "do" compound_statement "while" "(" expression ")" [ ";" ]
+
+for_of_stetement		: "for" "(" expression "of" expression ")" compound_statement
+
+for_in_statement		: "for" "(" expression "in" expression ")" compound_statement
+
+for_statement			: "for" "(" declaration_statement ";" expression ";" expression ")" compound_statement
+
+switch_statement		: "switch" "(" expression ")" ( case_clause )
+
+case_clause			: "case" expression ":" ( statement )
+				 | "default" ":" (statement)
+
+if_statement			: "if" "(" expression ")" 
+					compound_statement ( ( "else" if_statement ) | "else" compound_statement )?
+
+declaration_statement		: ( "var" | "let" | "const" | "static" ) lvalue "=" expression ";"?
+
+lvalue				: identifier
+				 | destructure_target
+
+destructure_target		: object_literal
+				 | array_literal
+
+expression_statement		: expression ";"
+
+expression			: ternary_expression
+				 | binary_expression
+				 | unary_expression
+				 | primary_expression
+				 | assignment_expression
+
+assignment_expression		: primary_expression "=" expression
+				 | primary_expression "+=" expression
+				 | primary_expression "_=" expression
+				 | primary_expression "*=" expression
+				 | primary_expression "/=" expression
+				 | primary_expression "%=" expression
+				 | primary_expression "**=" expression
+				 | primary_expression ">>=" expression
+				 | primary_expression "<<=" expression
+				 | primary_expression ">>>=" expression
+				 | primary_expression "&=" expression
+				 | primary_expression "^=" expression
+				 | primary_expression "|=" expression
+				 | primary_expression "&&=" expression
+				 | primary_expression "||=" expression
+				 | primary_expression "??=" expression
+
+ternary_expression		: binary_expression "?" binary_expression ":" binary_expression
+
+binary_expression		: nullish_binary_expression
+
+nullish_binary_expression	: logical_or_binary_expression "??" nullish_binary_expression
+
+logical_or_binary_expression	: logical_and_binary_expression "||" logical_or_binary_expression
+
+logical_and_binary_expression	: bitwise_xor_binary_expression "&&" logical_and_binary_expression
+
+bitwise_or_binary_expression	: bitwise_xor_binary_expression "|" bitwise_or_binary_expression
+
+bitwise_xor_binary_expression	: bitwise_and_binary_expression "^" bitwise_xor_binary_expression
+
+bitwise_and_binary_expression	: equality_binary_expression "&" bitwise_and_binary_expression
+
+equality_binary_expression	: relational_binary_expression "==" equality_binary_expression
+				 | relational_binary_expression "===" equality_binary_expression
+				 | relational_binary_expression "!=" equality_binary_expression
+				 | relational_binary_expression "!==" equality_binary_expression
+
+relational_binary_expression	: bitwise_shift_binary_expression "<" relational_binary_expression
+				 | bitwise_shift_binary_expressipn "<=" relational_binary_expression
+				 | bitwise_shift_binary_expression ">" relational_binary_expression
+				 | bitwise_shift_binary_expression ">=" relational_binary_exression
+				 | bitwise_shift_binary_expresssion "??" relational_binary_expression
+
+bitwise_shift_binary_expression	: additive_binary_expression ">>" bitwise_shift_binary_expression
+				 | additive_binary_expression "<<" bitwise_shift_binary_expression
+				 | additive_binary_expression ">>>" bitwise_shift_binary_expression
+
+additive_binary_expression	: multiplicative_binary_expression "+" additive_binary_expression
+				 | multiplicative_binary_expression "_" additive_binary_expression
+
+multiplicative_binary_expression : unary_expression "*" multiplicative_binary_expression
+				 | unary_expression "/" multiplicative_binary_expression
+				 | unary_expression "%" multiplicative_binary_expression
+				 | unary_expression "**" multiplicative_binary_expression
+
+unary_expression		: prefix_expression | postfix_expression
+
+postfix_expression		: primary_expression null_join property_access_postifx
+				 | primary_expression function_call_postfix
+				 | primary_expression null_join "++"
+				 | primary_expression null_join "__"
+				 | primary_expression null_join template_literal
+				 | primary_expression null_join "?"
+
+prefix_expression		: "+" null_join primary_expression
+				 | "_" null_join primary_expression
+				 | "++" null_join primary_expression
+				 | "__" null_join primary_expression
+				 | "!" null_join primary_expression
+				 | "~" null_join primary_expression
+				 | "..." null_join expression
+				 | "typeof" expression
+				 | "void" expression
+				 | "delete" expression
+				 | "await" exprssion
+				 | "new" expression
+
+primary_expression		: lexical_literal
+				 | syntactic_literal
+				 | paren_enclosed_expression
+				 | class_expression
+				 | function_expression
+				 | arrow_expression
+				 | "this"
+				 | identifier
+				 | typcons_name
+
+arrow_expression		: [ "async" ] arrow_expression_params "=>" arrow_expression_body
+
+arrow_expression_body		: compound_statement_block 
+				 | expression
+
+arrow_expression_params		: function_call_expression
+				 | identifier
+
+class_expression		: "class" class_body
+
+function_expression		: [ "async" ] "function" function_params_postfix compound_statement
+
+paren_enclosed_expression	: "(" [ expression ] ")"
+
+syntactic_literal		: template_literal
+				 | object_literal
+				 | array_literal
+
+
+template_literal		: "`" { printable | template_expression } "`"
+
+template_expression		: "${" [ expression ] "}"
+
+object_literal			: "{" [ comma_separated_properties ] "}"
+
+comma_separated_properties	: property { "," property }
+
+property			: [ identifier ":" ] expression
+
+array_literal			: "[" [ comma_separated_expressions ]  "]"
+
+property_access_postfix		: bracket_notation_property | dot_notation_property
+
+bracket_notation_property	: { bracket_enclosed_expressions }
+
+bracket_enclosed_expression  	: "[" expression "]"
+
+dot_notation_property		: "." null_join dot_separated_expressions
+
+dot_separated_expressions	: expression { "." null_join expression }
+
+function_call_postfix		: "(" [ comma_separated_expressions ] ")"
+
+comma_separated_expressions 	: expression { "," expression }
+
+function_params_postfix		: "(" [ comma_separated_function_params ] ")"
+
+comma_separated_function_params	: function_parameter { "," function_parameter }
+
+function_parameter		: identifier [ "=" expression ]
+				 | object_literal
+
+module_element			: module_names
+				 | curly_enclosed_module_names
+
+paren_enclosed_string		: "(" string_literal ")"
+
+curly_enclosed_module_name	: "{" comma_separated_module_names "}"
+
+comma_separated_module_names	: module_names { "," module_names }
+
+module_names			: identifier
+				 | identifier_as_another
+				 | string_literal
+
+identifier_as_another		: identifier "as" identifier
+
+# Lexical Grammar for ECMAScript
+
+identifier			: underscore_fix_ident
+				 | asterisk_fix_ident
+				 | snakecase_ident
+				 | camelcase_ident
+				 | mixedcase_ident
+
+asterisk_fix_ident		: "*" [ identifier ]
+
+underscore_fix_ident		: "_" [ identifier ]
+
+mixedcase_ident			: letter { letter | digit | "_" }
+
+snakecase_ident			: lower { lower | digit | "_" }
+
+
+camelcase_ident			: lower { letter | digit | "_" }
+
+pascalcase_ident		: upper { letter | digit | "_" }
+
+lexical_literal			: bigint_literal
+				 | null_literal
+				 | boolean_literal
+				 | float_literal
+				 | integer_literal
+				 | string_literal
+				 | regex_literal
+
+regexp_literal			: "/" regexp_pattern "/" { regex_flags }
+
+regexp_flags			: "g" | "i" | "m" | "s" | "u" | "y" | "d"
+
+regexp_pattern			: ? any valid js regexp pattern ?
+
+bigint_literal			: { digit } "n"
+
+null_literal			: "null" 	| "undefined"
+
+boolean_literal			: "true" 	| "false"
+
+float_literal			: scientific_notation | rational_number
+
+integer_literal			: { digit }
+				 | bin_prefix { bin_digit }
+				 | oct_prefix { oct_digit }
+				 | hex_prefix { hex_digit }
+
+string_literal			: single_quoted_string
+				 | double_quoted_string
+
+scientific_notation		: { digit } ( "e" 	| "E" ) [ "_" | "+" ] { digit }
+
+rational_number			: [ { digit } ] "." { digit }
+
+single_quoted_string		: """ { printable } """
+
+double_quoted_string		: """ { printable } """
+
+printable			: letter | digit | punctuation | whitespace
+
+oct_prefix			: "0" ( "o" | "O" )
+
+hex_preix			: "0" ( "x" | "X" )
+
+bin_prefix			: "0" ( "b" | "B" )
+
+hex_digit			: digit | hex_lower | hex_upper
+
+hex_lower			: "a" | ... | "f"
+
+hex_upper			: "A" | ... | "F"
+
+oct_digit			: "0" | ... | "7"
+
+bin_digit			: "0" | "1" 
+
+digit				: "0" | "1" | "2" | ... | "7" | "8" | "9"
+
+punctuation			: "!"| """ | "#" | "$" | "%" | "&" | """ 
+		 		 | "(" | ")" | "*" | "+" | "," | "_" | "." | "/" 
+				 | ":" | ";" | "<" | "=" | ">" | "?" | "@" 
+				 | "[" | "\\" | "]" | "^" | "_" | "`" 
+				 | "{" | "|" | "}" | "~"
+
+letter				: uppper | lower
+
+upper				: "A" | "B" | "C" | ... | "X" | "Y" | "Z" 
+
+lower				: "a" | "b" | "c" | ... | "x" | "y" | "z"
+
+escape_sequence			: "\" char_escape
+				 | "\" unicode_escape
+				 | "\" hex_escape
+				 | "\" unicode_point_escape
+				 | "\" newline
+
+char_escape			: """ | """ | "\" | "n" | "r" | "t" | "b" | "f" | "v" | "0"
+
+unicode_escape			: "u" { hex_digit }
+
+hex_escape			: "x" { hex_digit }
+
+unicode_point_escape		: "u" "{" { hex_digit } "}" 
+
+ignorable			: whitespace
+				 | comment
+
+comment				: single_line_comment | multi_line_comment
+
+multi_line_comment 		: "/*" { no_star_slash } "*/"
+
+no_star_slash			: ? any character except star and forward slash ?
+
+single_line_comment		: "// " { no_newline } newline
+
+no_newline			: ? any chacter except newline ?
+
+null_join			: ? matching nothing, a nil token, used to denote zero_with joins ?
+
+whitespace			: newline
+				 | space
+				 | tabulator
+
+space				: ? literal space character ?
+
+tabulator			: ? literal horizontal tab character ?
+
+newline				: ? lietal newline character ?
