@@ -1,5 +1,2 @@
-start: try_catch_finally_statement
-compound_statement: "test"
-expression: "test"
-
-try_catch_finally_statement	: "try" compound_statement ( "catch" ( "(" expression ")" )? compound_statement )? ( "finally" compound_statement )?
+start: char_escape
+char_escape	: """ | """ | "\" | "n" | "r" | "t" | "b" | "f" | "v" | "0"
