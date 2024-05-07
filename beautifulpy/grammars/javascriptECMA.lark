@@ -1,10 +1,34 @@
 // created using the current ECMAScript standard https://tc39.es/ecma262/#sec-ecmascript-language-expressions
 %import common.WORD
-
+%import common.DIGIT
+%import common.DECIMAL
+%import common.HEXDIGIT
+%import common.WS
+%ignore WS
 file_input: (compound_statement|simple_statement)
 //rules
 statement: (compound_statement|simple_statement)
-compound_statement: "placeholder"
-simple_statement: "placeholder"
+compound_statement: function_expression|anonymous_function_declaration|set_function|
+simple_statement: private_identifier_declaration|object_literal
+function_expression: "async"? "function" IDENTIFIER_NAME function_params "{"statement*"}"
+anonymous_function_declaration: "function" function_params* "{" statement "}"
+set_function: "set" IDENTIFIER_NAME function_params"{"statement"}"
+function_params: "(" (IDENTIFIER_NAME|",")? ")"
+private_identifier_declaration: private_identifier "=" VALUE ";"?
+variable_declaration: "var"|"const"|"let" IDENTIFIER_NAME "=" VALUE ";"?
+obj_declaration: "var"|"const"|"let" IDENTIFIER_NAME "=" "{" obj_property "}"
+obj_property: IDENTIFIER_NAME|VALUE ":" IDENTIFIER_NAME|VALUE
+private_identifier: "#" IDENTIFIER_NAME
+object_literal:"("? "{" (obj_property|set_function)* "}" ")"?
 //terminals
-IDENTIFIER: WORD
+IDENTIFIER_NAME: WORD
+VALUE: BOOLEAN_LITERAL|INTEGER|DOUBLE_QUOTE_STRING|SINGLE_QUOTE_STRING|NULL_LITERAL
+BOOLEAN_LITERAL: "true"
+INTEGER: /[0-9]/
+OCTAL_NUM: "0o"|"0O" /[0-7]/*
+HEXADECIMAL_NUM: HEXDIGIT
+DOUBLE_QUOTE_STRING: "\"" /./ "\""
+SINGLE_QUOTE_STRING: "'" /./ "'"
+NULL_LITERAL: "null"
+PUNCUATOR:"{"|"("|")"|"."|"..."|";"|","|"<"|">"|"<="|">="|"=="|"!="|"==="|"!=="|"+"|"-"|"*"|"%"|"**"|"++"|"--"|"<<"|">>"|">>>"|"&"|"|"|"^"|"!"|"`"|"&&"|"||"|"??"|"?"|":"|"="|"+="|"-="|"*="|"%="|"**="|"<<="|">>="|">>>="|"&="|"|="|"^="|"&&="|"||="|"??="|"=>"|"?."|"/"|"/="|"}"
+
