@@ -37,10 +37,10 @@ from lark import Visitor, Transformer,Token
 
 python_requirements = []
 javascript_requirements = []
-import_trees = []
 supported_languages = ["python","javascript"]
 '''visitor classes for the get_requirements function'''
 class get_import_statements(Visitor):
+    import_trees = []
     #python tokens
     def import_from(self, tree):
         assert tree.data == "import_from"
@@ -55,7 +55,7 @@ class get_imports(Visitor):
 """returns a list of imports for the given file."""
 def get_requirements(file,language, filter_builtins = False):
     if language == "python":
-        if pathlib.Path(file).suffix != ".py":
+        if pathlib.Path(file).suffix != ".py" :
             raise Exception(f"The file you are trying to parse is of type ${pathlib.Path(file).suffix} not py")
         python_requirements.clear()
         import_trees.clear()
