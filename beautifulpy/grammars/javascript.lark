@@ -13,10 +13,11 @@ line_comment: /\/\/[^\n]*/
 block_comment: "/*" /./* "*/"
 //statements
 statement: (variable_declaration|func_call)
-compound_statement: (function_declaration)
+compound_statement: (function_declaration|class_declaration)
 variable_declaration: ("var"|"const"|"let") IDENTIFIER "=" literal ";"?
 function_declaration: "function" IDENTIFIER?  "(" argument_list ")" "{" (statement|compound_statement|comment)* "}"
 class_declaration: "class" IDENTIFIER? "{" "}"
+constructor_function: "constructor"
 func_call: (IDENTIFIER|".")+ "(" argument_list ")" ";"?
 
 //terminals and general use rules

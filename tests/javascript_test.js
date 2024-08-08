@@ -21,13 +21,21 @@ function test(arg1,arg2){
     console.log(arg1+arg2);
 }
 test(1,2)
+//defining a class with constructor and private methods
 class test_Class{
-constuctor(){
-    this.property = null;
+constructor(property){
+    this.property = property;
 }
-#privatemethod(){
+#privatemethod1(){
     console.log("this comes from a private method")
 }
+#privatemethod2(){
+    console.log("this comes from a private method2")
+    }
+public_method(){
+    console.log("this comes from a public method")
 }
-const class_object = new test_Class();
-class_object.privatemethod
+} 
+class_object = new test_Class();
+class_object.privatemethod();
+//defining a class with inheritance
