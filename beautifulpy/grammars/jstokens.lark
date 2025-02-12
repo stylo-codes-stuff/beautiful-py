@@ -1,0 +1,32 @@
+//made(mostly) to the 2024 ecma script spec
+//uc is just an abbreviation of unicode
+
+%import common.WS
+%import common.LETTER
+%import common.DIGIT
+%ignore WS
+
+file_input: (token|comment)*
+comment: hashbang|line_comment|block_comment
+hashbang: /#![^\n]*/
+line_comment: /\/\/[^\n]*/
+block_comment: "/*" /./* "*/"
+token: identifier_name|private_identifier|punctuator|operator|reserved_word|strict_keyword|literal
+private_identifier: "#" identifier_name
+identifier_name: ("_"|"$")? (LETTER|DIGIT|"_")+
+reserved_word: "await"|"break"|"case"|"catch"|"class"|"const"|"continue"|"debugger"|"default"|"delete"|"do"|"else"|"enum"|"export"|"extends"|"finally"|"for"|"function"|"if"|"import"|"in"|"instanceof"|"new"|"return"|"super"|"switch"|"this"|"throw"|"try"|"typeof"|"var"|"void"|"while"|"with"|"yield"
+strict_keyword: "let"|"static"|"implements"|"interface"|"package"|"private"|"protected"|"public"
+punctuator:"{"|"}"|"("|")"|"["|"]"
+operator: arithmetic_operator|assignment_operator|comparison_operator|logical_operator|bitwise_operator|other_puncuator
+arithmetic_operator: "+"|"-"|"*"|"/"|"%"|"++"|"--"
+assignment_operator: "="|"+="|"-="|"*="|"/="|"%="
+comparison_operator: "=="|"!="|"==="|"!=="|">"|"<"|">="|"<="
+logical_operator:"&&"|"||"|"!"
+bitwise_operator:"&"|"|"|"^"|"<<"|">>"|">>>"
+other_puncuator:","|"."|"..."|":"|";"|"?"|"#"
+DQ_STRING_LITERAL: /\"(\\.|[^"\\])*\"/
+literal: DQ_STRING_LITERAL|SQ_STRING_LITERAL|BOOLEAN_LITERAL|FLOAT_LITERAL|INTEGER_LITERAL
+SQ_STRING_LITERAL:/\'(\\.|[^"\\])*\'/
+BOOLEAN_LITERAL: "true"|"false"
+FLOAT_LITERAL.1: /[+-]?/ DIGIT+ "." DIGIT+ | "." DIGIT+
+INTEGER_LITERAL.1: /[+-]?[0-9]+/
