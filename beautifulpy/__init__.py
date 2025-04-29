@@ -40,7 +40,7 @@ supported_languages = ["python","javascript"]
 '''visitor classes for the get_requirements function'''
 class get_import_statements(Visitor):
     import_trees = []
-    #python tokens
+    #fetches tokens named import_from and import_name respectively
     def import_from(self, tree):
         assert tree.data == "import_from"
         import_trees.append(tree.children[0])
