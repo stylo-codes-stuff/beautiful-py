@@ -35,8 +35,7 @@ import rich
 import pathlib
 from lark import Visitor, Transformer,Token
 
-python_requirements = []
-javascript_requirements = []
+requirements = []
 supported_languages = ["python","javascript"]
 '''visitor classes for the get_requirements function'''
 class get_import_statements(Visitor):
@@ -48,32 +47,36 @@ class get_import_statements(Visitor):
     def import_name(self,tree):
         assert tree.data == "import_name"
         import_trees.append(tree.children[0])
+# so this is why we initalized the list before the function was even declared yikes!!!!
+#change this immediatley to have its own list
 class get_imports(Visitor):
     def name(self,tree):
         assert tree.data == "name"
-        python_requirements.append(tree.children[0])
+        requirements.append(tree.children[0])
 """returns a list of imports for the given file."""
 def get_requirements(file,language, filter_builtins = False):
+    #initalize requirements list variable
+    #checks what extension the file should be parsed in and checks the files extension to make sure incorrect parameters weren't set
     if language == "python":
         if pathlib.Path(file).suffix != ".py" :
             raise Exception(f"The file you are trying to parse is of type ${pathlib.Path(file).suffix} not py")
-        python_requirements.clear()
-        import_trees.clear()
+        #opens file and begins parsing using the python grammar
         with open(file,"r") as file:
+            #generates an abstract syntax tree and extracts import name tokens using visitors 
             tree = parsers.python.parse(file.read())
             get_import_statements().visit(tree)
             for tree in import_trees:
                 get_imports().visit(tree)
-            for token in python_requirements:
+            #after name tokens are extracted check if built in libraries need to be filtered and add them to the requirements list 
+            for token in requirements:
                 if filter_builtins == True:
                     if token.value not in sys.stdlib_module_names:
-                        print("yes")
-                        python_requirements[python_requirements.index(token)] = token.value
+                        requirements[requirements.index(token)] = token.value
                     if token.value in sys.stdlib_module_names:
-                        python_requirements[python_requirements.index(token)] = ""
+                        requirements[requirements.index(token)] = ""
                 if filter_builtins == False:
-                    python_requirements[python_requirements.index(token)] = token.value
-        return python_requirements
+                    python_requirements[requirements.index(token)] = token.value
+        return requirements
 def parse(file, language):
     if language not in supported_languages:
         raise Exception(f"unsupported language, please use a language from the list below\n{supported_languages}")
